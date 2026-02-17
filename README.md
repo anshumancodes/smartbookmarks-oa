@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Smart Bookmarks
 
-## Getting Started
+A simple bookmark manager built with Next.js (App Router) and Supabase.
 
-First, run the development server:
+## Features
+- Google OAuth login only  
+- Add & delete bookmarks (URL + title)  
+- Private data with Supabase Row Level Security  
+- Real-time sync across tabs/devices  
+- Minimal responsive UI with Tailwind CSS  
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Tech Stack
+- Next.js (App Router)
+- Supabase (Auth, Database, Realtime)
+- Tailwind CSS
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Problems Faced & Solutions
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**1. Google OAuth redirect issues**  
+At first, login worked but users landed on a 404 after Google sign-in.  
+**Solution:** Added an `/auth/callback` route to properly exchange the OAuth code for a Supabase session and redirect back to the app.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+**2. Keeping bookmarks private**  
+Initially all bookmarks were visible to every user because the database had no restrictions.  
+**Solution:** Enabled Supabase Row Level Security (RLS) and wrote policies using `auth.uid()` so users can only read/write their own bookmarks.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**3. Real-time updates felt delayed**  
+Supabase Realtime worked, but the UI didn’t update instantly after adding a bookmark.  
+**Solution:** Added a local refresh trigger/state update after insert/delete so the UI updates immediately while realtime sync handles other tabs/devices.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**4. Package / import errors**  
+Ran into issues with missing Supabase packages and SSR helpers.  
+**Solution:** Simplified setup to use `@supabase/supabase-js` for client auth and reinstalled dependencies to fix linking issues.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+**5. Next.js App Router quirks**  
+Faced errors like missing root layout tags and client/server component confusion.  
+**Solution:** Ensured correct `app/layout.tsx` structure, restarted the dev server, and clearly separated client components (`'use client'`) where needed.
+
+
